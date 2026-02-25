@@ -1,0 +1,9 @@
+{
+ "type": "record",
+ "name": "FraudModelVersion",
+ "fields": [
+  {"name": "model_version", "type": "string"},
+  {"name": "model_path", "type": "string"},
+  {"name": "status", "type": "string"}
+ ]
+}
