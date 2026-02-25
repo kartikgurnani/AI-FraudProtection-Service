@@ -1,0 +1,16 @@
+name: Build and Notify Kafka
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install Kafka Client
+      run: pip install kafka-python
+
+    - name: Send Build Event
+      run: python kafka/build_metadata_producer.py
