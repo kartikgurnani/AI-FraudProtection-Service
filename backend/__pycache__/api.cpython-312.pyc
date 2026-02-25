@@ -1,0 +1,163 @@
+"""
+api.py — Refactored Fraud Protection API
+
+Improvements:
+- Clean imports
+- Environment-based config
+- Dummy API key (no hardcoded secrets)
+- Better structure
+- Logging enabled
+- Model loading separated
+"""
+
+import os
+import io
+import logging
+import numpy as np
+import pandas as pd
+import joblib
+import re
+
+from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+
+import google.generativeai as genai
+
+from sklearn.metrics import (
+    accuracy_score,
+    recall_score,
+    f1_score,
+    classification_report,
+    confusion_matrix,
+)
+
+# ---- local imports ----
+from model.model import load_trained_model, evaluate_model
+from model.LogisticRegression import load_trained_model_Log
+from model.test1 import load_trained_models
+from log_test3 import load_logistic_model
+
+
+# ==========================================================
+# CONFIGURATION
+# ==========================================================
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
+# 🔐 Dummy API key (replace using environment variable)
+GENAI_API_KEY = os.getenv("GENAI_API_KEY", "DUMMY_API_KEY_12345")
+
+genai.configure(api_key=GENAI_API_KEY)
+
+
+# ==========================================================
+# APP INITIALIZATION
+# ==========================================================
+
+app = FastAPI(title="AI Fraud Protection Service")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+# ==========================================================
+# MODEL LOADING (loaded once at startup)
+# ==========================================================
+
+logger.info("Loading trained models...")
+
+try:
+    anomaly_models = load_trained_models()
+    logistic_model = load_logistic_model()
+    logger.info("Models loaded successfully")
+
+except Exception as e:
+    logger.error(f"Model loading failed: {e}")
+    raise RuntimeError("Model loading failed")
+
+
+# ==========================================================
+# HEALTH CHECK
+# ==========================================================
+
+@app.get("/")
+def health_check():
+    return {
+        "status": "running",
+        "service": "AI Fraud Protection Service"
+    }
+
+
+# ==========================================================
+# FRAUD DETECTION ENDPOINT
+# ==========================================================
+
+@app.post("/predict")
+async def predict(file: UploadFile = File(...)):
+    """
+    Upload CSV → returns fraud prediction.
+    """
+
+    try:
+        contents = await file.read()
+        df = pd.read_csv(io.StringIO(contents.decode()))
+
+        if df.empty:
+            raise HTTPException(status_code=400, detail="Empty file")
+
+        # Example prediction logic (adjust to your pipeline)
+        predictions = logistic_model.predict(df)
+
+        return {
+            "rows_processed": len(df),
+            "predictions": predictions.tolist()
+        }
+
+    except Exception as e:
+        logger.exception("Prediction failed")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ==========================================================
+# MODEL EVALUATION ENDPOINT
+# ==========================================================
+
+@app.post("/evaluate")
+async def evaluate(file: UploadFile = File(...)):
+    """
+    Upload labeled CSV → returns evaluation metrics.
+    """
+
+    try:
+        contents = await file.read()
+        df = pd.read_csv(io.StringIO(contents.decode()))
+
+        if "label" not in df.columns:
+            raise HTTPException(
+                status_code=400,
+                detail="Dataset must contain 'label' column"
+            )
+
+        X = df.drop("label", axis=1)
+        y_true = df["label"]
+
+        y_pred = logistic_model.predict(X)
+
+        return {
+            "accuracy": accuracy_score(y_true, y_pred),
+            "recall": recall_score(y_true, y_pred),
+            "f1_score": f1_score(y_true, y_pred),
+            "confusion_matrix": confusion_matrix(y_true, y_pred).tolist(),
+            "report": classification_report(y_true, y_pred)
+        }
+
+    except Exception as e:
+        logger.exception("Evaluation failed")
+        raise HTTPException(status_code=500, detail=str(e))
