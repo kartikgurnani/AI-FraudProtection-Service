@@ -1,0 +1,11 @@
+{
+ "type": "record",
+ "name": "ModelDeployment",
+ "fields": [
+  {"name": "model_name", "type": "string"},
+  {"name": "version", "type": "string"},
+  {"name": "accuracy", "type": "float"},
+  {"name": "deployed_at", "type": "string"},
+  {"name": "environment", "type": "string"}
+ ]
+}
