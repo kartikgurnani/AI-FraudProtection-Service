@@ -1,0 +1,11 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: fraud-stream-job
+spec:
+  template:
+    spec:
+      containers:
+      - name: processor
+        image: fraud-stream:latest
+      restartPolicy: Never
