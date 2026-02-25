@@ -1,0 +1,17 @@
+{
+  "build_version": "1.0.0",
+  "build_date": "2026-04-27T12:00:00Z",
+  "commit_hash": "abcdef1234567890abcdef1234567890abcdef12",
+  "build_number": "42",
+  "builder": "DevSecOps Platform",
+  "environment": "production",
+  "project": "AI-FraudProtection-Service",
+  "repository": "https://github.com/kartikgurnani/AI-FraudProtection-Service",
+  "hardware": {
+    "cpu": "Intel Xeon E5-2670",
+    "cpu_cores": 16,
+    "ram": "32GB",
+    "storage": "1TB SSD",
+    "os": "Ubuntu 22.04"
+  }
+}
