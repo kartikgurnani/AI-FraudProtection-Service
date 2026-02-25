@@ -1,0 +1,74 @@
+## Data Dictionary ##
+
+**step**  
+- Represents a discrete time unit within the dataset's simulation.  
+- **Unit**: 1 hour per step.  
+- **Total steps**: 744 (covering a 30-day period).  
+- **Purpose**: Used to track the temporal sequence of transactions.
+
+**type**  
+- Categorizes the nature of the transaction.  
+- **Possible values**:
+  - **CASH-IN**: Money entering the system from external sources.
+  - **CASH-OUT**: Money leaving the system to external sources.
+  - **DEBIT**: Customer-initiated debit transactions.
+  - **PAYMENT**: Payments made by customers (e.g., bills, services).
+  - **TRANSFER**: Funds transferred between customer accounts.
+  - **SWIFT**: International wire transfer transactions (noted as an additional fraudulent attempt type).
+
+**amount**  
+- The monetary value involved in the transaction.  
+- **Currency**: Local currency units.  
+- **Note**: Large amounts can be indicative of fraudulent behavior, especially if inconsistent with typical transaction behavior.
+
+**nameOrig**  
+- Unique identifier of the customer initiating the transaction.  
+- **Format**: String, e.g., "C1231006815".  
+- **Note**: Customers starting with 'M' are merchants and do not have balance information.
+
+**oldbalanceOrg**  
+- Customer's account balance before the transaction.  
+- **Note**: Used to verify the integrity of transaction data and detect anomalies.
+
+**newbalanceOrig**  
+- Customer's account balance after the transaction.  
+- **Purpose**: To monitor account activity and verify consistency.
+
+**nameDest**  
+- Identifier of the transaction recipient.  
+- **Format**: String, e.g., "C1666544295".  
+- **Note**: Customers with 'M' prefix are merchants and do not have associated balances.
+
+**oldbalanceDest**  
+- Recipient's account balance before the transaction.  
+- **Note**: Not available for merchant accounts ('M').
+
+**newbalanceDest**  
+- Recipient's account balance after the transaction.  
+- **Note**: Not available for merchant accounts ('M').
+
+**isFraud**  
+- Indicator of whether the transaction was performed by a fraudulent agent.  
+- **Values**:  
+  - `1` : Fraudulent transaction aimed at illicit profit.  
+  - `0` : Legitimate transaction.  
+- **Fraud Types**:
+  - **Account Takeover**: Fraudulent agents gaining control of customer accounts to drain funds.
+  - **Money Laundering**: Concealing origins of illegally obtained money via transfers.
+  - **Synthetic Identities**: Using fabricated identities for fraudulent transactions.
+  - **Transfer Fraud**: Unauthorized transfers between accounts.
+  - **Cash-Out Fraud**: Converting digital funds into cash illicitly.
+  - **Swift Fraud**: International wire transfers executed with malicious intent, often to evade detection.
+
+**isFlaggedFraud**  
+- Flags suspicious transactions based on predefined rules.  
+- **In this dataset**:  
+  - Transfers exceeding **200,000 units** are flagged as potentially illegal.  
+  - **Purpose**: To assist in early detection and prevent large-scale illegal activities.
+
+**Additional Notes**:
+- **Customer Behavior Patterns**: Analyzing transaction frequency, amount, and types can help identify anomalous activities.
+- **Fraud Detection Techniques**:
+  - **Rule-Based**: Flag large transactions or unusual transfer patterns.
+  - **Machine Learning**: Use historical labeled data to classify transactions.
+  - **Behavioral Analytics**: Monitor deviations from normal customer behavior.
