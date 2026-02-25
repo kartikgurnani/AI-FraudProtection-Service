@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-stream
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: kafka-stream
+  template:
+    metadata:
+      labels:
+        app: kafka-stream
+    spec:
+      containers:
+      - name: fraud-consumer
+        image: fraud-stream:latest
