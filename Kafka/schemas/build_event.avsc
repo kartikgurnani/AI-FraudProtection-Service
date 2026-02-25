@@ -1,0 +1,13 @@
+{
+ "type": "record",
+ "name": "BuildEvent",
+ "namespace": "fraud.platform",
+ "fields": [
+  {"name": "build_version", "type": "string"},
+  {"name": "build_date", "type": "string"},
+  {"name": "commit_hash", "type": "string"},
+  {"name": "environment", "type": "string"},
+  {"name": "project", "type": "string"},
+  {"name": "platform", "type": "string"}
+ ]
+}
