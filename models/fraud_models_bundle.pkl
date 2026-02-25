@@ -1,0 +1,13 @@
+import joblib
+
+bundle = {
+    "pca": pca_model,
+    "isolation_forest": isolation_forest_model,
+    "one_class_svm": one_class_svm_model,
+    "lof": local_outlier_factor_model,
+    "elliptic_envelope": elliptic_envelope_model,
+    "som": som_model,
+    "tsne": tsne_model,
+}
+
+joblib.dump(bundle, "fraud_models_bundle.pkl")
